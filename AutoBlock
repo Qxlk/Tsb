@@ -53,18 +53,18 @@ local function get_closest_to_cursor()
     local my_char = LP.Character
     for i = 1, #list_cache do
         local p = list_cache[i]
-        if p ~= my_char then
-            local hrp = p:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                local s_pos, on_screen = WorldToScreen(hrp.Position)
-                if on_screen then
-                    local dx = s_pos.X - mx
-                    local dy = s_pos.Y - my
-                    local d_sq = dx*dx + dy*dy
-                    if d_sq < dist_sq then
-                        dist_sq = d_sq
-                        closest = p
-                    end
+        if p == my_char then continue end
+        if p.Name == LP.Name then continue end
+        local hrp = p:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local s_pos, on_screen = WorldToScreen(hrp.Position)
+            if on_screen then
+                local dx = s_pos.X - mx
+                local dy = s_pos.Y - my
+                local d_sq = dx*dx + dy*dy
+                if d_sq < dist_sq then
+                    dist_sq = d_sq
+                    closest = p
                 end
             end
         end
@@ -75,7 +75,6 @@ end
 local function draw_visuals(my_root, t_root)
     local step = 6.283185307179586 / segs
     local col = target_player and color_green or color_red
-
     local cp_x = my_root.Position.X
     local cp_y = my_root.Position.Y - 3
     local cp_z = my_root.Position.Z
@@ -117,7 +116,6 @@ end
 
 while true do
     task.wait(0.01)
-    local now = tick()
 
     local c_now = iskeypressed(target_key)
     if c_now and not last_c then
@@ -140,7 +138,6 @@ while true do
         continue
     end
 
-    local threat_detected = false
     local t_root = nil
 
     if target_player and target_player.Parent then
@@ -150,10 +147,6 @@ while true do
             local t_noblock = target_player:FindFirstChild("NoBlock")
 
             if t_m1 or t_noblock then
-                threat_detected = true
-            end
-
-            if threat_detected then
                 local dx = t_root.Position.X - root.Position.X
                 local dy = t_root.Position.Y - root.Position.Y
                 local dz = t_root.Position.Z - root.Position.Z
